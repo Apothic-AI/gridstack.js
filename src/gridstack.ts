@@ -2541,15 +2541,15 @@ export class GridStack {
         }
 
         // calculate the grid size based on element outer size
-        const w = node.w || Math.round(helper.offsetWidth / cellWidth) || 1;
-        const h = node.h || Math.round(helper.offsetHeight / cellHeight) || 1;
+        const measuredW = Math.max(1, Math.round(helper.offsetWidth / cellWidth)) || 1;
+        const measuredH = Math.max(1, Math.round(helper.offsetHeight / cellHeight)) || 1;
 
         // if the item came from another grid, make a copy and save the original info in case we go back there
         if (node.grid && node.grid !== this) {
           // copy the node original values (min/max/id/etc...) but override width/height/other flags which are this grid specific
           // console.log('dropover cloning node'); // TEST
           if (!el._gridstackNodeOrig) el._gridstackNodeOrig = node; // shouldn't have multiple nested!
-          el.gridstackNode = node = { ...node, w, h, grid: this };
+          el.gridstackNode = node = { ...node, w: measuredW, h: measuredH, grid: this };
           delete node.x;
           delete node.y;
           this.engine.cleanupNode(node)
@@ -2559,8 +2559,8 @@ export class GridStack {
             node._isExternal =  // DOM needs to be re-parented on a drop
             node._temporaryRemoved = true; // so it can be inserted onDrag below
         } else {
-          node.w = w;
-          node.h = h;
+          node.w = measuredW;
+          node.h = measuredH;
           node._temporaryRemoved = true; // so we can insert it
         }
 
@@ -2750,7 +2750,7 @@ export class GridStack {
         delete node._resizing;
         delete node._event;
         delete node._lastTried;
-        const widthChanged = node.w !== node._orig.w;
+        const widthChanged = node._orig ? node.w !== node._orig.w : false;
 
         // if the item has moved to another grid, we're done here
         const target: GridItemHTMLElement = event.target as GridItemHTMLElement;
