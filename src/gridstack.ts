@@ -1090,6 +1090,9 @@ export class GridStack {
    * });
    */
   public getGridItems(): GridItemHTMLElement[] {
+    if (!this.el) {
+      return [];
+    }
     return Array.from(this.el.children)
       .filter((el: HTMLElement) => el.matches('.' + this.opts.itemClass) && !el.matches('.' + this.opts.placeholderClass)) as GridItemHTMLElement[];
   }
